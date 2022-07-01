@@ -2,7 +2,7 @@
 
 struct Card
 {
-	char type; //0 ~ 3, 0¢¼, 1¡ß, 2¢¾, 3¢À (SDHC)
+	char type; //0 ~ 3, 0â™ , 1â—†, 2â™¥, 3â™£ (SDHC)
 	char number;//0 ~ 12, 0 = A, 12 = K
 };
 enum ColorType {
@@ -39,28 +39,28 @@ void print_deck(char d[4][13])
 					Color(WHITE, BLACK);
 				else
 					Color(GRAY, BLACK);
-				printf("¢¼");
+				printf("â™ ");
 				break;
 			case 1:
 				if (!(d[i][j]))
 					Color(WHITE, RED);
 				else
 					Color(GRAY, RED);
-				printf("¡ß");
+				printf("â—†");
 				break;
 			case 2:
 				if (!(d[i][j]))
 					Color(WHITE, RED);
 				else
 					Color(GRAY, RED);
-				printf("¢¾");
+				printf("â™¥");
 				break;
 			case 3:
 				if (!(d[i][j]))
 					Color(WHITE, BLACK);
 				else
 					Color(GRAY, BLACK);
-				printf("¢À");
+				printf("â™£");
 				break;
 			}
 			switch (j)
