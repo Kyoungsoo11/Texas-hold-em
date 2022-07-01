@@ -6,3 +6,6 @@
 #include <time.h>
 #include <conio.h>
 #define PLAYERMAX 9
+
+void gotoxy(int x, int y);
+void Color(int back, int text);
