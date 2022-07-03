@@ -23,6 +23,27 @@ enum ColorType {
 	YELLOW,		//14
 	WHITE		//15
 } COLOR;
+enum type {
+	spade,     //0
+	diamond,   //1
+	heart,     //2
+	clover     //3
+} TYPE;
+enum number {
+	Ace,   //0
+	Two,   //1
+	Three, //2
+	Four,  //3
+	Five,  //4
+	Six,   //5
+	Seven, //6
+	Eight, //7
+	Nine,  //8
+	Ten,   //9
+	Jack,  //10
+	Queen, //11
+	King   //12
+} NUMBER;
 void print_deck(char d[4][13])
 {
 	int x = 70, y = 1;//Locate
@@ -95,40 +116,123 @@ void print_deck(char d[4][13])
 		}
 	}
 }
+void get_card(int* t, int* n)
+{
+	char type, number;
+	printf("Type : ");
+	type = _getche();
+	printf("\n");
+	printf("Number : ");
+	number = _getche();
+	printf("\n");
+	switch (type)
+	{
+	case 'S':
+		*t = spade;
+		break;
+	case 'D':
+		*t = diamond;
+		break;
+	case 'H':
+		*t = heart;
+		break;
+	case 'C':
+		*t = clover;
+		break;
+	}
+	switch (number)
+	{
+	case 'A':
+	case '1':
+		*n = Ace;
+		break;
+	case '2':
+		*n = Two;
+		break;
+	case '3':
+		*n = Three;
+		break;
+	case '4':
+		*n = Four;
+		break;
+	case '5':
+		*n = Five;
+		break;
+	case '6':
+		*n = Six;
+		break;
+	case '7':
+		*n = Seven;
+		break;
+	case '8':
+		*n = Eight;
+		break;
+	case '9':
+		*n = Nine;
+		break;
+	case 'T':
+		*n = Ten;
+		break;
+	case 'J':
+		*n = Jack;
+		break;
+	case 'Q':
+		*n = Queen;
+		break;
+	case 'K':
+		*n = King;
+		break;
+	}
+	printf("%d %d\n", *t, *n);
+	printf("\n");
+	
+}
+void calculate(struct Card* s)
+{
+	int i;
+	//Royal Straigt Flush
+	for (i = 0; i < 7; i++)
+	{
+
+	}
+	//Straigt Flush
+}
 int main()
 {
-	char input_t, input_n, t, n;
-	int player_num;
-	struct Card community[5], My_Hand[2], OPP[2 * PLAYERMAX];//18 = 2(hand) * PLAYERMAX(max player number)
+	int in_t, in_n, t, n;
+	int path, player_num;
+	struct Card community[5], My_Hand[2];//
 	char deck[4][13] = { {0}, };//[type][number]
 
 player_number://get player num
-	player_num = 0;
 	printf("Enter the number of Other Players (1~%d) : ", PLAYERMAX);
 	scanf("%d", &player_num);
-	if (player_num == 16)
+
+	printf("Entering : ");
+	scanf("%d", &path);
+	//Enter
+	if (path == King)//for debuging
 		goto debug;
-	else if (player_num > PLAYERMAX || player_num < 1)//confirm if (1 ~ PLAYERMAX)
+	else if (path > PLAYERMAX || path < 1)//confirm if (1 ~ PLAYERMAX)
 	{
 		printf("Wrong input!\n");
 		goto player_number;
 	}
 
 debug:
-	printf("Enter your hand (1st) : ");
-	scanf("%hhd %hhd", &input_t, &input_n);
-	My_Hand[0].type = input_t;
-	My_Hand[0].number = input_n;
-	deck[input_t][input_n] = 1;
-
-
-	printf("Enter your hand (2nd) : ");
-	scanf("%hhd %hhd", &input_t, &input_n);
-	My_Hand[1].type = input_t;
-	My_Hand[1].number = input_n;
-	deck[input_t][input_n] = 1;
+M1:
+	printf("Enter your hand (1st)\n");
+	get_card(&in_t, &in_n);
+	My_Hand[0].type = in_t;
+	My_Hand[0].number = in_n;
+	deck[in_t][in_n] = 1;
+M2:
+	printf("Enter your hand (2nd)\n");
+	get_card(&in_t, &in_n);
+	My_Hand[1].type = in_t;
+	My_Hand[1].number = in_n;
+	deck[in_t][in_n] = 1;
 
 	print_deck(deck);
-
 	return 0;
 }
