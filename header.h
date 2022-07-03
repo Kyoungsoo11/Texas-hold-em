@@ -6,6 +6,9 @@
 #include <time.h>
 #include <conio.h>
 #define PLAYERMAX 9
+#define HANDSIZE 2
+#define COMSIZE 5
+
 
 void gotoxy(int x, int y);
 void Color(int back, int text);
