@@ -5,9 +5,12 @@
 #include <Windows.h>
 #include <time.h>
 #include <conio.h>
+#include <string.h>
 #define PLAYERMAX 9
 #define HANDSIZE 2
 #define COMSIZE 5
+#define NUM 13
+#define SUIT 4
 
 
 void gotoxy(int x, int y);
