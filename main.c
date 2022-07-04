@@ -44,39 +44,51 @@ enum number {
 	Queen, //11
 	King   //12
 } NUMBER;
-void print_deck(char d[4][13])
+enum Made {
+	high,     //0
+	pair,     //1
+	twopair,  //2
+	triple,   //3
+	st,       //4
+	flush,    //5
+	fullhouse,//6 
+	fourcard, //7
+	st_flush, //8
+	rst_flush //9
+} MADE;
+void print_deck(char d[SUIT][NUM])
 {
 	int x = 100, y = 5;//Locate
 	int i, j;
-	for (i = 0; i < 4; i++)
+	for (i = 0; i < SUIT; i++)
 	{
-		for (j = 0; j < 13; j++)
+		for (j = 0; j < NUM; j++)
 		{
 			gotoxy(x + 5 * i, y + j);
 			switch (i)
 			{
-			case 0:
+			case spade:
 				if(!(d[i][j]))
 					Color(WHITE, BLACK);
 				else
 					Color(GRAY, BLACK);
 				printf("♠");
 				break;
-			case 1:
+			case diamond:
 				if (!(d[i][j]))
 					Color(WHITE, RED);
 				else
 					Color(GRAY, RED);
 				printf("◆");
 				break;
-			case 2:
+			case heart:
 				if (!(d[i][j]))
 					Color(WHITE, RED);
 				else
 					Color(GRAY, RED);
 				printf("♥");
 				break;
-			case 3:
+			case clover:
 				if (!(d[i][j]))
 					Color(WHITE, BLACK);
 				else
@@ -86,29 +98,29 @@ void print_deck(char d[4][13])
 			}
 			switch (j)
 			{
-			case 0://A
+			case Ace://A
 				printf("A");
 				break;
-			case 1://2
-			case 2:
-			case 3:
-			case 4:
-			case 5:
-			case 6:
-			case 7:
-			case 8:
+			case Two://2
+			case Three:
+			case Four:
+			case Five:
+			case Six:
+			case Seven:
+			case Eight:
+			case Nine:
 				printf("%d", j + 1);
 				break;
-			case 9://10
+			case Ten://10
 				printf("T");
 				break;
-			case 10://J
+			case Jack://J
 				printf("J");
 				break;
-			case 11://Q
+			case Queen://Q
 				printf("Q");
 				break;
-			case 12://K
+			case King://K
 				printf("K");
 				break;
 			}
@@ -184,20 +196,76 @@ void get_card(int* t, int* n)
 		break;
 	}
 }
-int calculate(struct Card* com, struct Card* hand)
+void bubble_sort(char* a, int size)
 {
-	struct Card s[COMSIZE + HANDSIZE];
-	int i, j, k;
+	char i, j, tmp;
+	for (i = 0; i < size - 1; i++)
+	{
+		for (j = 0; j < size - 1 - i; j++)
+		{
+			if (a[j] < a[j + 1] || a[j] != Ace || a[j + 1] == Ace)
+			{
+				tmp = a[j];
+				a[j] = a[j + 1];
+				a[j + 1] = tmp;
+			}
+		}
+	}
+}
+int straigt_com(char a[], int size)//9 mountain, 8~0<-straight, -1 <- no straigt
+{
+	int i, j, k, tmp, count, score;
+	char straigt[10][5];
+	//initializing straigt
+	for (i = 0; i < 9; i++)
+	{
+		for (j = 0; j < 5; j++)
+		{
+			straigt[i][j] = i + j;
+		}
+	}//i=9
+	straigt[i][0] = Ten; straigt[i][1] = Jack; straigt[i][2] = Queen; straigt[i][3] = King; straigt[i][4] = Ace;
+	//compare a and straigt
+	for (k = 9; k >= 0; k--)
+	{
+		count = 0;
+		for (i = 0; i < 5; i++)
+		{
+			for (j = 0; j < size; j++)
+			{
+				if (straigt[k][i] == a[j])
+				{
+					count++;
+					break;
+				}
+			}
+		}
+		if (count >= 5)
+		{
+			break;
+		}
+	}//if there is no straigt then k = -1
+	return k;
+}
+int score_cal(int n, char* a)//n: kind of made, a: additional deter
+{
+	int s_1, s_2;
+
+}
+int compare(struct Card* com, struct Card* MY, struct Card* OP)
+{
+	struct Card s[COMSIZE + HANDSIZE], s_1;
+	int i, j, k, score, str;
 	char t, n;
-	char Scount, Smem[COMSIZE + HANDSIZE], Dcount, Dmem[COMSIZE + HANDSIZE], Hcount, Hmem[COMSIZE + HANDSIZE], Ccount, Cmem[COMSIZE + HANDSIZE];
-	//Compound hand and community
+	char suitmem[SUIT][COMSIZE + HANDSIZE], suitcount[SUIT] = {0, }, nummem[NUM][COMSIZE + HANDSIZE], numcount[NUM] = {0, }, strmem[COMSIZE + HANDSIZE];
+	//Append Hand and Community
 	for (i = 0; i < COMSIZE; i++)
 	{
 		s[i] = *(com + i);
 	}
 	for (j = 0; j < HANDSIZE; j++)
 	{
-		s[i + j] = *(hand + j);
+		s[i + j] = *(MY + j);
 	}
 	//print s
 	for (k = 0; k < COMSIZE + HANDSIZE; k++)
@@ -253,45 +321,125 @@ int calculate(struct Card* com, struct Card* hand)
 		}
 		Color(BLACK, WHITE); printf(" ");
 	}
-	//Flush
-	Scount = Dcount = Hcount = Ccount = 0;
+	//count type and num
 	for (i = 0; i < COMSIZE + HANDSIZE; i++)
 	{
 		t = s[i].type;
-		switch (t)
+		n = s[i].number;
+		switch (t)//Get the number of same types
 		{
 		case spade:
-			Smem[Scount] = i;
-			Scount++;
+			suitmem[spade][suitcount[spade]] = i;
+			suitcount[spade]++;
 			break;
 		case diamond:
-			Dmem[Dcount] = i;
-			Dcount++;
+			suitmem[diamond][suitcount[diamond]] = i;
+			suitcount[diamond]++;
 			break;
 		case heart:
-			Hmem[Hcount] = i;
-			Hcount++;
+			suitmem[heart][suitcount[heart]] = i;
+			suitcount[heart]++;
 			break;
 		case clover:
-			Cmem[Ccount] = i;
-			Ccount++;
+			suitmem[clover][suitcount[clover]] = i;
+			suitcount[clover]++;
+			break;
+		}
+		switch (n)//Get the number of same numbers
+		{
+		case Ace:
+			nummem[Ace][numcount[Ace]] = i;
+			numcount[Ace]++;
+			break;
+		case Two:
+			nummem[Two][numcount[Two]] = i;
+			numcount[Two]++;
+			break;
+		case Three:
+			nummem[Three][numcount[Three]] = i;
+			numcount[Three]++;
+			break;
+		case Four:
+			nummem[Four][numcount[Four]] = i;
+			numcount[Four]++;
+			break;
+		case Five:
+			nummem[Five][numcount[Five]] = i;
+			numcount[Five]++;
+			break;
+		case Six:
+			nummem[Six][numcount[Six]] = i;
+			numcount[Six]++;
+			break;
+		case Seven:
+			nummem[Seven][numcount[Seven]] = i;
+			numcount[Seven]++;
+			break;
+		case Eight:
+			nummem[Eight][numcount[Eight]] = i;
+			numcount[Eight]++;
+			break;
+		case Nine:
+			nummem[Nine][numcount[Nine]] = i;
+			numcount[Nine]++;
+			break;
+		case Ten:
+			nummem[Ten][numcount[Ten]] = i;
+			numcount[Ten]++;
+			break;
+		case Jack:
+			nummem[Jack][numcount[Jack]] = i;
+			numcount[Jack]++;
+			break;
+		case Queen:
+			nummem[Queen][numcount[Queen]] = i;
+			numcount[Queen]++;
+			break;
+		case King:
+			nummem[King][numcount[King]] = i;
+			numcount[King]++;
 			break;
 		}
 	}
-	if (Scount >= 5 || Dcount >= 5 || Hcount >= 5 || Ccount >= 5)
+	//if(flush)
+	for (i = 0; i < SUIT; i++)//S, D, H, C
 	{
-		printf("flush!!");
+		if (suitcount[i] >= 5)
+		{
+			printf("FLUSH!!!\n");
+			for (j = 0; j < suitcount[i]; j++)
+			{
+				strmem[j] = s[suitmem[i][j]].number;
+			}
+			str = straigt_com(strmem, suitcount[i]);
+			if (str == -1)
+			{
+				bubble_sort(strmem, suitcount[i]);
+				score = score_cal(flush, strmem);//flush(type:i)
+			}
+			else if (str == 9)
+			{
+				printf("ROYAL STRAIGT FLUSH");
+				score = score_cal(rst_flush, strmem);
+			}
+			else
+			{
+				printf("STRAIGT FLUSH");
+				score = score_cal(st_flush, strmem);
+			}
+		}
 	}
-	return 0;
+	return score;
 }
+
 int main()
 {
 	system("mode con cols=200 lines=50");
 	int in_t, in_n, t, n;
 	int path, player_num;
 	time_t t1, t2;//To get processing time
-	struct Card community[COMSIZE], My_Hand[HANDSIZE];//
-	char deck[4][13] = { {0}, };//[type][number]
+	struct Card community[COMSIZE], My_Hand[HANDSIZE], op_Hand[HANDSIZE];//
+	char deck[SUIT][NUM] = { {0,}, };//[type][number]
 
 player_number://get player num
 	printf("Enter the number of Other Players (1~%d) : ", PLAYERMAX);
@@ -302,7 +450,7 @@ player_number://get player num
 	//Enter
 	if (path == King)//for debuging
 		goto debug;
-	else if (path > PLAYERMAX || path < 1)//confirm if (1 ~ PLAYERMAX)
+	else if (player_num > PLAYERMAX || player_num < 1)//confirm if (1 ~ PLAYERMAX)
 	{
 		printf("Wrong input!\n");
 		goto player_number;
@@ -353,7 +501,7 @@ C5:
 	deck[in_t][in_n] = 1;
 
 	t1 = time(NULL);
-	calculate(community, My_Hand);
+	compare(community, My_Hand, op_Hand);
 	t2 = time(NULL);
 	printf("%lld", t2 - t1);//Get processing time;
 	print_deck(deck);
