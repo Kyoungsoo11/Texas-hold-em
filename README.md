@@ -4,4 +4,4 @@
 #### claculate FLUSH
 ### 22/07/04 21:01
 #### socre_cal
-#### compare ###### comparing two set[7]
+#### compare -> comparing two set[7]
