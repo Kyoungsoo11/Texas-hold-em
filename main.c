@@ -247,31 +247,29 @@ int straigt_com(char a[], int size)//9 mountain, 8~0<-straight, -1 <- no straigt
 	}//if there is no straigt then k = -1
 	return k;
 }
-int score_cal(int n, char* a)//n: kind of made, a: additional deter
-{
-	int s_1, s_2;
-
-}
 int compare(struct Card* com, struct Card* MY, struct Card* OP)
 {
-	struct Card s[COMSIZE + HANDSIZE], s_1;
-	int i, j, k, score, str;
-	char t, n;
-	char suitmem[SUIT][COMSIZE + HANDSIZE], suitcount[SUIT] = {0, }, nummem[NUM][COMSIZE + HANDSIZE], numcount[NUM] = {0, }, strmem[COMSIZE + HANDSIZE];
-	//Append Hand and Community
+	struct Card s_my[COMSIZE + HANDSIZE], s_op[COMSIZE + HANDSIZE];
+	int i, j, k, result, str;
+	char t, n, made_my, made_op;
+	char suitmem_my[SUIT][COMSIZE + HANDSIZE], suitcount_my[SUIT] = {0, }, nummem_my[NUM][COMSIZE + HANDSIZE], numcount_my[NUM] = {0, }, strmem_my[COMSIZE + HANDSIZE];
+	char suitmem_op[SUIT][COMSIZE + HANDSIZE], suitcount_op[SUIT] = { 0, }, nummem_op[NUM][COMSIZE + HANDSIZE], numcount_op[NUM] = { 0, }, strmem_op[COMSIZE + HANDSIZE];
+	//Append Hand and Community(s_my, s_op)
 	for (i = 0; i < COMSIZE; i++)
 	{
-		s[i] = *(com + i);
+		s_my[i] = *(com + i);
+		s_op[i] = *(com + i);
 	}
 	for (j = 0; j < HANDSIZE; j++)
 	{
-		s[i + j] = *(MY + j);
+		s_my[i + j] = *(MY + j);
+		s_op[i + j] = *(OP + j);
 	}
-	//print s
+	//print s_my
 	for (k = 0; k < COMSIZE + HANDSIZE; k++)
 	{
-		i = s[k].type;
-		j = s[k].number;
+		i = s_my[k].type;
+		j = s_my[k].number;
 		switch (i)
 		{
 		case 0:
@@ -324,112 +322,225 @@ int compare(struct Card* com, struct Card* MY, struct Card* OP)
 	//count type and num
 	for (i = 0; i < COMSIZE + HANDSIZE; i++)
 	{
-		t = s[i].type;
-		n = s[i].number;
+		t = s_my[i].type;
+		n = s_my[i].number;
 		switch (t)//Get the number of same types
 		{
 		case spade:
-			suitmem[spade][suitcount[spade]] = i;
-			suitcount[spade]++;
+			suitmem_my[spade][suitcount_my[spade]] = i;
+			suitcount_my[spade]++;
 			break;
 		case diamond:
-			suitmem[diamond][suitcount[diamond]] = i;
-			suitcount[diamond]++;
+			suitmem_my[diamond][suitcount_my[diamond]] = i;
+			suitcount_my[diamond]++;
 			break;
 		case heart:
-			suitmem[heart][suitcount[heart]] = i;
-			suitcount[heart]++;
+			suitmem_my[heart][suitcount_my[heart]] = i;
+			suitcount_my[heart]++;
 			break;
 		case clover:
-			suitmem[clover][suitcount[clover]] = i;
-			suitcount[clover]++;
+			suitmem_my[clover][suitcount_my[clover]] = i;
+			suitcount_my[clover]++;
 			break;
 		}
 		switch (n)//Get the number of same numbers
 		{
 		case Ace:
-			nummem[Ace][numcount[Ace]] = i;
-			numcount[Ace]++;
+			nummem_my[Ace][numcount_my[Ace]] = i;
+			numcount_my[Ace]++;
 			break;
 		case Two:
-			nummem[Two][numcount[Two]] = i;
-			numcount[Two]++;
+			nummem_my[Two][numcount_my[Two]] = i;
+			numcount_my[Two]++;
 			break;
 		case Three:
-			nummem[Three][numcount[Three]] = i;
-			numcount[Three]++;
+			nummem_my[Three][numcount_my[Three]] = i;
+			numcount_my[Three]++;
 			break;
 		case Four:
-			nummem[Four][numcount[Four]] = i;
-			numcount[Four]++;
+			nummem_my[Four][numcount_my[Four]] = i;
+			numcount_my[Four]++;
 			break;
 		case Five:
-			nummem[Five][numcount[Five]] = i;
-			numcount[Five]++;
+			nummem_my[Five][numcount_my[Five]] = i;
+			numcount_my[Five]++;
 			break;
 		case Six:
-			nummem[Six][numcount[Six]] = i;
-			numcount[Six]++;
+			nummem_my[Six][numcount_my[Six]] = i;
+			numcount_my[Six]++;
 			break;
 		case Seven:
-			nummem[Seven][numcount[Seven]] = i;
-			numcount[Seven]++;
+			nummem_my[Seven][numcount_my[Seven]] = i;
+			numcount_my[Seven]++;
 			break;
 		case Eight:
-			nummem[Eight][numcount[Eight]] = i;
-			numcount[Eight]++;
+			nummem_my[Eight][numcount_my[Eight]] = i;
+			numcount_my[Eight]++;
 			break;
 		case Nine:
-			nummem[Nine][numcount[Nine]] = i;
-			numcount[Nine]++;
+			nummem_my[Nine][numcount_my[Nine]] = i;
+			numcount_my[Nine]++;
 			break;
 		case Ten:
-			nummem[Ten][numcount[Ten]] = i;
-			numcount[Ten]++;
+			nummem_my[Ten][numcount_my[Ten]] = i;
+			numcount_my[Ten]++;
 			break;
 		case Jack:
-			nummem[Jack][numcount[Jack]] = i;
-			numcount[Jack]++;
+			nummem_my[Jack][numcount_my[Jack]] = i;
+			numcount_my[Jack]++;
 			break;
 		case Queen:
-			nummem[Queen][numcount[Queen]] = i;
-			numcount[Queen]++;
+			nummem_my[Queen][numcount_my[Queen]] = i;
+			numcount_my[Queen]++;
 			break;
 		case King:
-			nummem[King][numcount[King]] = i;
-			numcount[King]++;
+			nummem_my[King][numcount_my[King]] = i;
+			numcount_my[King]++;
+			break;
+		}
+		t = s_op[i].type;
+		n = s_op[i].number;
+		switch (t)//Get the number of same types
+		{
+		case spade:
+			suitmem_op[spade][suitcount_op[spade]] = i;
+			suitcount_op[spade]++;
+			break;
+		case diamond:
+			suitmem_op[diamond][suitcount_op[diamond]] = i;
+			suitcount_op[diamond]++;
+			break;
+		case heart:
+			suitmem_op[heart][suitcount_op[heart]] = i;
+			suitcount_op[heart]++;
+			break;
+		case clover:
+			suitmem_op[clover][suitcount_op[clover]] = i;
+			suitcount_op[clover]++;
+			break;
+		}
+		switch (n)//Get the number of same numbers
+		{
+		case Ace:
+			nummem_op[Ace][numcount_op[Ace]] = i;
+			numcount_op[Ace]++;
+			break;
+		case Two:
+			nummem_op[Two][numcount_op[Two]] = i;
+			numcount_op[Two]++;
+			break;
+		case Three:
+			nummem_op[Three][numcount_op[Three]] = i;
+			numcount_op[Three]++;
+			break;
+		case Four:
+			nummem_op[Four][numcount_op[Four]] = i;
+			numcount_op[Four]++;
+			break;
+		case Five:
+			nummem_op[Five][numcount_op[Five]] = i;
+			numcount_op[Five]++;
+			break;
+		case Six:
+			nummem_op[Six][numcount_op[Six]] = i;
+			numcount_op[Six]++;
+			break;
+		case Seven:
+			nummem_op[Seven][numcount_op[Seven]] = i;
+			numcount_op[Seven]++;
+			break;
+		case Eight:
+			nummem_op[Eight][numcount_op[Eight]] = i;
+			numcount_op[Eight]++;
+			break;
+		case Nine:
+			nummem_op[Nine][numcount_op[Nine]] = i;
+			numcount_op[Nine]++;
+			break;
+		case Ten:
+			nummem_op[Ten][numcount_op[Ten]] = i;
+			numcount_op[Ten]++;
+			break;
+		case Jack:
+			nummem_op[Jack][numcount_op[Jack]] = i;
+			numcount_op[Jack]++;
+			break;
+		case Queen:
+			nummem_op[Queen][numcount_op[Queen]] = i;
+			numcount_op[Queen]++;
+			break;
+		case King:
+			nummem_op[King][numcount_op[King]] = i;
+			numcount_op[King]++;
 			break;
 		}
 	}
 	//if(flush)
 	for (i = 0; i < SUIT; i++)//S, D, H, C
 	{
-		if (suitcount[i] >= 5)
+		if (suitcount_my[i] >= 5)
 		{
-			printf("FLUSH!!!\n");
-			for (j = 0; j < suitcount[i]; j++)
+			for (j = 0; j < suitcount_my[i]; j++)
 			{
-				strmem[j] = s[suitmem[i][j]].number;
+				strmem_my[j] = s_my[suitmem_my[i][j]].number;
 			}
-			str = straigt_com(strmem, suitcount[i]);
-			if (str == -1)
+			str = straigt_com(strmem_my, suitcount_my[i]);
+			if (str == -1)//flush
 			{
-				bubble_sort(strmem, suitcount[i]);
-				score = score_cal(flush, strmem);//flush(type:i)
+				printf("FLUSH!!!\n");
+				made_my = flush;
 			}
-			else if (str == 9)
+			else if (str == 9)//royal straigt flush
 			{
-				printf("ROYAL STRAIGT FLUSH");
-				score = score_cal(rst_flush, strmem);
+				printf("ROYAL STRAIGT FLUSH\n");
+				made_my = rst_flush;
 			}
-			else
+			else//straigt flush
 			{
-				printf("STRAIGT FLUSH");
-				score = score_cal(st_flush, strmem);
+				printf("STRAIGT FLUSH\n");
+				made_my = st_flush;
+			}
+		}
+		if (suitcount_op[i] >= 5)
+		{
+			for (j = 0; j < suitcount_op[i]; j++)
+			{
+				strmem_op[j] = s_op[suitmem_op[i][j]].number;
+			}
+			str = straigt_com(strmem_op, suitcount_op[i]);
+			if (str == -1)//flush
+			{
+				printf("FLUSH!!!\n");
+				made_op = flush;
+			}
+			else if (str == 9)//royal straigt flush
+			{
+				printf("ROYAL STRAIGT FLUSH\n");
+				made_op = rst_flush;
+			}
+			else//straigt flush
+			{
+				printf("STRAIGT FLUSH\n");
+				made_op = st_flush;
 			}
 		}
 	}
-	return score;
+
+	if (made_op > made_my)
+		result = -1;
+	else if (made_op < made_my)
+		result = 1;
+	else
+	{
+		result = 0;
+		switch (made_my)
+		{
+		case 9:
+			break;
+		}
+	}
+
+	return result;
 }
 
 int main()
