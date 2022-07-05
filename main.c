@@ -127,6 +127,7 @@ void print_deck(char d[SUIT][NUM])
 			Color(BLACK, WHITE);
 		}
 	}
+	printf("\n");
 }
 void get_card(int* t, int* n)
 {
@@ -252,8 +253,8 @@ int compare(struct Card* com, struct Card* MY, struct Card* OP)
 	struct Card s_my[COMSIZE + HANDSIZE], s_op[COMSIZE + HANDSIZE];
 	int i, j, k, result, str;
 	char t, n, made_my, made_op;
-	char suitmem_my[SUIT][COMSIZE + HANDSIZE], suitcount_my[SUIT] = {0, }, nummem_my[NUM][COMSIZE + HANDSIZE], numcount_my[NUM] = {0, }, strmem_my[COMSIZE + HANDSIZE];
-	char suitmem_op[SUIT][COMSIZE + HANDSIZE], suitcount_op[SUIT] = { 0, }, nummem_op[NUM][COMSIZE + HANDSIZE], numcount_op[NUM] = { 0, }, strmem_op[COMSIZE + HANDSIZE];
+	char suitmem_my[SUIT][COMSIZE + HANDSIZE], suitcount_my[SUIT] = {0, }, nummem_my[NUM][COMSIZE + HANDSIZE], numcount_my[NUM] = {0, }, strmem_my[COMSIZE + HANDSIZE], st_my[COMSIZE + HANDSIZE];
+	char suitmem_op[SUIT][COMSIZE + HANDSIZE], suitcount_op[SUIT] = { 0, }, nummem_op[NUM][COMSIZE + HANDSIZE], numcount_op[NUM] = { 0, }, strmem_op[COMSIZE + HANDSIZE], st_op[COMSIZE + HANDSIZE];
 	//Append Hand and Community(s_my, s_op)
 	for (i = 0; i < COMSIZE; i++)
 	{
@@ -475,6 +476,7 @@ int compare(struct Card* com, struct Card* MY, struct Card* OP)
 			break;
 		}
 	}
+my:
 	//if(flush)
 	for (i = 0; i < SUIT; i++)//S, D, H, C
 	{
@@ -489,18 +491,90 @@ int compare(struct Card* com, struct Card* MY, struct Card* OP)
 			{
 				printf("FLUSH!!!\n");
 				made_my = flush;
+				goto op;
 			}
 			else if (str == 9)//royal straigt flush
 			{
 				printf("ROYAL STRAIGT FLUSH\n");
 				made_my = rst_flush;
+				goto op;
 			}
 			else//straigt flush
 			{
 				printf("STRAIGT FLUSH\n");
 				made_my = st_flush;
+				goto op;
 			}
 		}
+	}
+	//if(straigh)
+	k = 0;
+	for (i = 0; i < NUM; i++)
+	{
+		if (numcount_my[i] > 0)
+		{
+			st_my[k] = i;
+			k++;
+		}
+	}
+	if (k >= 5)
+	{
+		str = straigt_com(st_my, k);
+		if (str != -1)
+		{
+			printf("STRAIGT!");
+			made_my = st;
+			goto op;
+		}
+	}
+	//if(Four of a kind)
+	for (i = 0; i < NUM; i++)
+	{
+		if (numcount_my[i] == 4)
+		{
+			made_my = fourcard;
+			goto op;
+		}
+	}
+	//if(Fullhouse, triple, twopair, onepair)
+	j = k = 0;
+	for (i = 0; i < NUM; i++)
+	{
+		if (numcount_my[i] == 3 && j == 0)
+		{
+			j++;
+		}
+		if (numcount_my[i] == 2 && k <= 1)
+		{
+			k++;
+		}
+	}
+	if (j == 1 && k >= 1)//fh
+	{
+		made_my = fullhouse;
+		goto op;
+	}
+	else if (j == 1 && k == 0)
+	{
+		made_my = triple;
+		goto op;
+	}
+	else if (j == 0 && k == 2)
+	{
+		made_my = twopair;
+		goto op;
+	}
+	else if (j == 0 && k == 1)
+	{
+		made_my = pair;
+		goto op;
+	}
+	else
+		made_my = high;
+op:
+	//if(flush)
+	for (i = 0; i < SUIT; i++)//S, D, H, C
+	{
 		if (suitcount_op[i] >= 5)
 		{
 			for (j = 0; j < suitcount_op[i]; j++)
@@ -512,20 +586,87 @@ int compare(struct Card* com, struct Card* MY, struct Card* OP)
 			{
 				printf("FLUSH!!!\n");
 				made_op = flush;
+				goto result;
 			}
 			else if (str == 9)//royal straigt flush
 			{
 				printf("ROYAL STRAIGT FLUSH\n");
 				made_op = rst_flush;
+				goto result;
 			}
 			else//straigt flush
 			{
 				printf("STRAIGT FLUSH\n");
 				made_op = st_flush;
+				goto result;
 			}
 		}
 	}
-
+	//if(straigh)
+	k = 0;
+	for (i = 0; i < NUM; i++)
+	{
+		if (numcount_op[i] > 0)
+		{
+			st_op[k] = i;
+			k++;
+		}
+	}
+	if (k >= 5)
+	{
+		str = straigt_com(st_op, k);
+		if (str != -1)
+		{
+			printf("STRAIGT!");
+			made_op = st;
+			goto result;
+		}
+	}
+	//if(Four of a kind)
+	for (i = 0; i < NUM; i++)
+	{
+		if (numcount_op[i] == 4)
+		{
+			made_op = fourcard;
+			goto result;
+		}
+	}
+	//if(Fullhouse, triple, twopair, onepair)
+	j = k = 0;
+	for (i = 0; i < NUM; i++)
+	{
+		if (numcount_op[i] == 3 && j == 0)
+		{
+			j++;
+		}
+		if (numcount_op[i] == 2 && k <= 1)
+		{
+			k++;
+		}
+	}
+	if (j == 1 && k >= 1)//fh
+	{
+		made_op = fullhouse;
+		goto result;
+	}
+	else if (j == 1 && k == 0)
+	{
+		made_op = triple;
+		goto result;
+	}
+	else if (j == 0 && k == 2)
+	{
+		made_op = twopair;
+		goto result;
+	}
+	else if (j == 0 && k == 1)
+	{
+		made_op = pair;
+		goto result;
+	}
+	else
+		made_op = high;
+result:
 	if (made_op > made_my)
 		result = -1;
 	else if (made_op < made_my)
@@ -546,6 +687,7 @@ int compare(struct Card* com, struct Card* MY, struct Card* OP)
 int main()
 {
 	system("mode con cols=200 lines=50");
+	CONSOLE_SCREEN_BUFFER_INFO presentCur;
 	int in_t, in_n, t, n;
 	int path, player_num;
 	time_t t1, t2;//To get processing time
@@ -574,48 +716,86 @@ M1:
 	My_Hand[0].type = in_t;
 	My_Hand[0].number = in_n;
 	deck[in_t][in_n] = 1;
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &presentCur);
+	print_deck(deck);
+	gotoxy(presentCur.dwCursorPosition.X, presentCur.dwCursorPosition.Y);
 M2:
 	printf("Enter your hand (2nd)\n");
 	get_card(&in_t, &in_n);
 	My_Hand[1].type = in_t;
 	My_Hand[1].number = in_n;
 	deck[in_t][in_n] = 1;
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &presentCur);
+	print_deck(deck);
+	gotoxy(presentCur.dwCursorPosition.X, presentCur.dwCursorPosition.Y);
 C1:
 	printf("Enter your community\n");
 	get_card(&in_t, &in_n);
 	community[0].type = in_t;
 	community[0].number = in_n;
 	deck[in_t][in_n] = 1;
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &presentCur);
+	print_deck(deck);
+	gotoxy(presentCur.dwCursorPosition.X, presentCur.dwCursorPosition.Y);
 C2:
 	printf("Enter your community\n");
 	get_card(&in_t, &in_n);
 	community[1].type = in_t;
 	community[1].number = in_n;
 	deck[in_t][in_n] = 1;
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &presentCur);
+	print_deck(deck);
+	gotoxy(presentCur.dwCursorPosition.X, presentCur.dwCursorPosition.Y);
 C3:
 	printf("Enter your community\n");
 	get_card(&in_t, &in_n);
 	community[2].type = in_t;
 	community[2].number = in_n;
 	deck[in_t][in_n] = 1;
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &presentCur);
+	print_deck(deck);
+	gotoxy(presentCur.dwCursorPosition.X, presentCur.dwCursorPosition.Y);
 C4:
 	printf("Enter your community\n");
 	get_card(&in_t, &in_n);
 	community[3].type = in_t;
 	community[3].number = in_n;
 	deck[in_t][in_n] = 1;
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &presentCur);
+	print_deck(deck);
+	gotoxy(presentCur.dwCursorPosition.X, presentCur.dwCursorPosition.Y);
 C5:
 	printf("Enter your community\n");
 	get_card(&in_t, &in_n);
 	community[4].type = in_t;
 	community[4].number = in_n;
 	deck[in_t][in_n] = 1;
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &presentCur);
+	print_deck(deck);
+	gotoxy(presentCur.dwCursorPosition.X, presentCur.dwCursorPosition.Y);
+O1:
+	printf("Enter oppent's hand (1st)\n");
+	get_card(&in_t, &in_n);
+	op_Hand[0].type = in_t;
+	op_Hand[0].number = in_n;
+	deck[in_t][in_n] = 1;
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &presentCur);
+	print_deck(deck);
+	gotoxy(presentCur.dwCursorPosition.X, presentCur.dwCursorPosition.Y);
+O2:
+	printf("Enter oppent's hand (2nd)\n");
+	get_card(&in_t, &in_n);
+	op_Hand[1].type = in_t;
+	op_Hand[1].number = in_n;
+	deck[in_t][in_n] = 1;
+	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &presentCur);
+	print_deck(deck);
+	gotoxy(presentCur.dwCursorPosition.X, presentCur.dwCursorPosition.Y);
 
 	t1 = time(NULL);
 	compare(community, My_Hand, op_Hand);
 	t2 = time(NULL);
 	printf("%lld", t2 - t1);//Get processing time;
-	print_deck(deck);
 
 	gotoxy(0, 48);
 	return 0;
